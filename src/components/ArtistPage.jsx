@@ -1,6 +1,16 @@
 import React from 'react'
+import {Link} from 'react-router-dom'
+import {useSelector} from 'react-redux'
+import Loader from './common/Loader'
 
-export default ({artist}) => {
+const ArtistPage = () => {
+  const artist = useSelector(state => state.songs.artist)
+  const loader = useSelector(state => state.app.loader)
+
+  if (loader) {
+    return <Loader />
+  }
+
   return (
     <div className='container mt-2'>
       {artist.name ? (
@@ -23,8 +33,16 @@ export default ({artist}) => {
           />
         </div>
       ) : (
-        <h1>Nothing to display</h1>
+        <div className='alert alert-warning' role='alert'>
+          You have to{' '}
+          <Link to='/' className='alert-link'>
+            select artist
+          </Link>{' '}
+          to see more information
+        </div>
       )}
     </div>
   )
 }
+
+export default ArtistPage
