@@ -1,9 +1,9 @@
 import React from 'react'
 import {NavLink} from 'react-router-dom'
 
-export default ({name, artist, pageLink, onClick}) => {
+const Track = ({name, artist, pageLink, onClick}) => {
   return (
-    <div className='card m-3' style={{width: '18rem'}}>
+    <div className='card w-auto m-2'>
       <div className='card-body'>
         <h5 className='card-title d-inline-block'>{name}</h5>
         <NavLink
@@ -18,3 +18,5 @@ export default ({name, artist, pageLink, onClick}) => {
     </div>
   )
 }
+
+export default Track

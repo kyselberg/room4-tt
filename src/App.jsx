@@ -1,60 +1,47 @@
-import React, {useEffect, useState} from 'react'
-import {BrowserRouter, Route} from 'react-router-dom'
-import axios from 'axios'
+import React, {useEffect} from 'react'
+import {BrowserRouter, Route, Switch} from 'react-router-dom'
+import {useDispatch, useSelector} from 'react-redux'
 import Header from './components/Header'
 import Main from './components/Main'
 import ArtistPage from './components/ArtistPage'
 import Search from './components/Search'
-import {endPoint} from './assets/helpers'
+import Loader from './components/common/Loader'
+import {loadArtist, loadSongs} from './store/songs/actions'
 
-export default () => {
-  const [data, setData] = useState([])
-  const [artistInfo, updateArtistInfo] = useState({})
-  const [artistList, updateArtistList] = useState([])
+const App = () => {
+  const dispatch = useDispatch()
+  const artist = useSelector(state => state.songs.artist)
+  const loader = useSelector(state => state.app.loader)
 
-  useEffect(async () => {
-    const response = await axios.get(endPoint('tracks'))
-    setData([...response.data.tracks.track])
-  }, [])
+  useEffect(() => dispatch(loadSongs()), [])
 
-  const fetchArtist = async artistName => {
-    const name = artistName.split(' ').join('+')
-    const response = await axios.get(endPoint('artist')(name))
-    updateArtistInfo(response.data.artist)
-    console.log(artistInfo)
-  }
-
-  const findArtist = name => {
-    let list = []
-    if (name) {
-      list = data.filter(el =>
-        el.name.toLowerCase().includes(name.toLowerCase())
-      )
-    }
-    updateArtistList(list)
-  }
+  const fetchArtist = async artistName =>
+    dispatch(loadArtist(artist.name, artistName))
 
   return (
     <>
       <BrowserRouter>
         <Header />
-        <main>
-          <Route exact path='/'>
-            <Main onClick={fetchArtist} songsList={data} />
-          </Route>
-          <Route path='/page'>
-            <ArtistPage artist={artistInfo} />
-          </Route>
-
-          <Route path='/search'>
-            <Search
-              onClick={fetchArtist}
-              artistList={artistList}
-              findArtist={findArtist}
-            />
-          </Route>
-        </main>
+        {loader ? (
+          <Loader />
+        ) : (
+          <main className='d-flex justify-content-center align-items-center'>
+            <Switch>
+              <Route exact path='/'>
+                <Main onClick={fetchArtist} />
+              </Route>
+              <Route path='/page'>
+                <ArtistPage />
+              </Route>
+              <Route path='/search'>
+                <Search onClick={fetchArtist} />
+              </Route>
+            </Switch>
+          </main>
+        )}
       </BrowserRouter>
     </>
   )
 }
+
+export default App

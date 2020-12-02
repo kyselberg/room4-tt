@@ -1,10 +1,19 @@
 import React from 'react'
+import {useSelector} from 'react-redux'
 import Track from './Track'
+import Alert from './common/Alert'
 
-export default ({songsList, onClick}) => {
+const Main = ({onClick}) => {
+  const songs = useSelector(state => state.songs.songs)
+  const alert = useSelector(state => state.app.alert)
+
+  if (!songs.length) {
+    return <Alert text={alert} />
+  }
+
   return (
-    <div className='container d-flex flex-wrap align-content-around'>
-      {songsList.map(el => {
+    <div className='d-flex flex-wrap m-3'>
+      {songs.map(el => {
         return (
           <Track
             onClick={onClick}
@@ -18,3 +27,5 @@ export default ({songsList, onClick}) => {
     </div>
   )
 }
+
+export default Main
